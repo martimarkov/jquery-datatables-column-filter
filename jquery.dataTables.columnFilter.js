@@ -347,17 +347,17 @@
                         || escape(aData[j]) == escape(currentFilter)
                         )
                         selected = 'selected '
-                    r += '<option ' + selected + ' value="' + escape(aData[j]) + '">' + aData[j] + '</option>';
+                    r += '<option ' + selected + ' value="' + escape(aData[j]) + '">' + {{ aData[j] | translate}} + '</option>';
                 }
                 else {
                     var selected = '';
                     if (bRegex) {
                         //Do not escape values if they are explicitely set to avoid escaping special characters in the regexp
                         if (aData[j].value == currentFilter) selected = 'selected ';
-                        r += '<option ' + selected + 'value="' + aData[j].value + '">' + aData[j].label + '</option>';
+                        r += '<option ' + selected + 'value="' + aData[j].value + '">' + {{ aData[j].label | translate}} + '</option>';
                     } else {
                         if (escape(aData[j].value) == currentFilter) selected = 'selected ';
-                        r += '<option ' + selected + 'value="' + escape(aData[j].value) + '">' + aData[j].label + '</option>';
+                        r += '<option ' + selected + 'value="' + escape(aData[j].value) + '">' + {{ aData[j].label | translate}} + '</option>';
                     }
                 }
             }
