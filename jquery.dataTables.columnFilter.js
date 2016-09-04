@@ -1,23 +1,23 @@
 /*
-* File:        jquery.dataTables.columnFilter.js
-* Version:     1.5.6.
-* Author:      Jovan Popovic 
-* 
-* Copyright 2011-2014 Jovan Popovic, all rights reserved.
-*
-* This source file is free software, under either the GPL v2 license or a
-* BSD style license, as supplied with this software.
-* 
-* This source file is distributed in the hope that it will be useful, but 
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-* or FITNESS FOR A PARTICULAR PURPOSE. 
-* 
-* Parameters:"
-* @sPlaceHolder                 String      Place where inline filtering function should be placed ("tfoot", "thead:before", "thead:after"). Default is "tfoot"
-* @sRangeSeparator              String      Separator that will be used when range values are sent to the server-side. Default value is "~".
-* @sRangeFormat                 string      Default format of the From ... to ... range inputs. Default is From {from} to {to}
-* @aoColumns                    Array       Array of the filter settings that will be applied on the columns
-*/
+ * File:        jquery.dataTables.columnFilter.js
+ * Version:     1.5.6.
+ * Author:      Jovan Popovic
+ *
+ * Copyright 2011-2014 Jovan Popovic, all rights reserved.
+ *
+ * This source file is free software, under either the GPL v2 license or a
+ * BSD style license, as supplied with this software.
+ *
+ * This source file is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * Parameters:"
+ * @sPlaceHolder                 String      Place where inline filtering function should be placed ("tfoot", "thead:before", "thead:after"). Default is "tfoot"
+ * @sRangeSeparator              String      Separator that will be used when range values are sent to the server-side. Default value is "~".
+ * @sRangeFormat                 string      Default format of the From ... to ... range inputs. Default is From {from} to {to}
+ * @aoColumns                    Array       Array of the filter settings that will be applied on the columns
+ */
 (function ($) {
 
 
@@ -33,7 +33,8 @@
 
         var oFunctionTimeout = null;
 
-        var fnOnFiltered = function () { };
+        var fnOnFiltered = function () {
+        };
 
         function _fnGetColumnValues(oSettings, iColumn, bUnique, bFiltered, bIgnoreEmpty) {
             ///<summary>
@@ -62,7 +63,7 @@
 
             // use only filtered rows
             if (bFiltered == true) aiRows = oSettings.aiDisplay;
-                // use all rows
+            // use all rows
             else aiRows = oSettings.aiDisplayMaster; // all row numbers
 
             // set up data array	
@@ -76,10 +77,10 @@
                 // ignore empty values?
                 if (bIgnoreEmpty == true && sValue.length == 0) continue;
 
-                    // ignore unique values?
+                // ignore unique values?
                 else if (bUnique == true && jQuery.inArray(sValue, asResultData) > -1) continue;
 
-                    // else push the value onto the result data array
+                // else push the value onto the result data array
                 else asResultData.push(sValue);
             }
 
@@ -103,7 +104,7 @@
             label = label.replace(/(^\s*)|(\s*$)/g, "");
             var currentFilter = oTable.fnSettings().aoPreSearchCols[i].sSearch;
             var search_init = 'search_init ';
-            var inputvalue = label;
+            var inputvalue = '';
             if (currentFilter != '' && currentFilter != '^') {
                 if (bIsNumber && currentFilter.charAt(0) == '^')
                     inputvalue = currentFilter.substr(1); //ignore trailing ^
@@ -112,17 +113,17 @@
                 search_init = '';
             }
 
+
             var input = $('<input type="text" class="' + search_init + sCSSClass + '" value="' + inputvalue + '" rel="' + i + '"/>');
             if (iMaxLenght != undefined && iMaxLenght != -1) {
                 input.attr('maxlength', iMaxLenght);
             }
             th.html(input);
             if (bIsNumber)
-                th.wrapInner('<span class="filter_column filter_number" />');
+                th.wrapInner('<md-input-container class="md-block" flex-gt-sm></md-input-container>');
             else
-                th.wrapInner('<span class="filter_column filter_text" />');
+                th.wrapInner('<md-input-container class="md-block" flex-gt-sm></md-input-container>');
 
-            asInitVals[i] = label;
             var index = i;
 
             if (bIsNumber && !oTable.fnSettings().oFeatures.bServerSide) {
@@ -143,8 +144,8 @@
                             iLastFilterLength = 0;
                         var iCurrentFilterLength = this.value.length;
                         if (Math.abs(iCurrentFilterLength - iLastFilterLength) < iFilterLength
-                            //&& currentFilter.length == 0 //Why this?
-					        ) {
+                        //&& currentFilter.length == 0 //Why this?
+                        ) {
                             //Cancel the filtering
                             return;
                         }
@@ -158,19 +159,6 @@
                     fnOnFiltered();
                 });
             }
-
-            input.focus(function () {
-                if ($(this).hasClass("search_init")) {
-                    $(this).removeClass("search_init");
-                    this.value = "";
-                }
-            });
-            input.blur(function () {
-                if (this.value == "") {
-                    $(this).addClass("search_init");
-                    this.value = asInitVals[index];
-                }
-            });
         }
 
         function fnCreateRangeInput(oTable) {
@@ -190,41 +178,39 @@
             aiCustomSearch_Indexes.push(i);
 
 
-
             //------------start range filtering function
 
 
             /* 	Custom filtering function which will filter data in column four between two values
-            *	Author: 	Allan Jardine, Modified by Jovan Popovic
-            */
+             *	Author: 	Allan Jardine, Modified by Jovan Popovic
+             */
             //$.fn.dataTableExt.afnFiltering.push(
             oTable.dataTableExt.afnFiltering.push(
-	        function (oSettings, aData, iDataIndex) {
-	            if (oTable.attr("id") != oSettings.sTableId)
-	                return true;
-	            // Try to handle missing nodes more gracefully
-	            if (document.getElementById(sFromId) == null)
-	                return true;
-	            var iMin = document.getElementById(sFromId).value * 1;
-	            var iMax = document.getElementById(sToId).value * 1;
-	            var iValue = aData[_fnColumnIndex(index)] == "-" ? 0 : aData[_fnColumnIndex(index)] * 1;
-	            if (iMin == "" && iMax == "") {
-	                return true;
-	            }
-	            else if (iMin == "" && iValue <= iMax) {
-	                return true;
-	            }
-	            else if (iMin <= iValue && "" == iMax) {
-	                return true;
-	            }
-	            else if (iMin <= iValue && iValue <= iMax) {
-	                return true;
-	            }
-	            return false;
-	        }
-        );
+                function (oSettings, aData, iDataIndex) {
+                    if (oTable.attr("id") != oSettings.sTableId)
+                        return true;
+                    // Try to handle missing nodes more gracefully
+                    if (document.getElementById(sFromId) == null)
+                        return true;
+                    var iMin = document.getElementById(sFromId).value * 1;
+                    var iMax = document.getElementById(sToId).value * 1;
+                    var iValue = aData[_fnColumnIndex(index)] == "-" ? 0 : aData[_fnColumnIndex(index)] * 1;
+                    if (iMin == "" && iMax == "") {
+                        return true;
+                    }
+                    else if (iMin == "" && iValue <= iMax) {
+                        return true;
+                    }
+                    else if (iMin <= iValue && "" == iMax) {
+                        return true;
+                    }
+                    else if (iMin <= iValue && iValue <= iMax) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
             //------------end range filtering function
-
 
 
             $('#' + sFromId + ',#' + sToId, th).keyup(function () {
@@ -265,7 +251,7 @@
                     if (aoFragments[ti] == properties.sDateToToken) {
                         th.append(to);
                     } else {
-                        th.append('<label class="col-sm-1">'+aoFragments[ti]+'<i class="icon-calendar"></i></label>');
+                        th.append('<label class="col-sm-1">' + aoFragments[ti] + '<i class="icon-calendar"></i></label>');
                     }
                 }
             }
@@ -279,42 +265,42 @@
 
             //$.fn.dataTableExt.afnFiltering.push(
             oTable.dataTableExt.afnFiltering.push(
-	        function (oSettings, aData, iDataIndex) {
-	            if (oTable.attr("id") != oSettings.sTableId)
-	                return true;
+                function (oSettings, aData, iDataIndex) {
+                    if (oTable.attr("id") != oSettings.sTableId)
+                        return true;
 
-	            var dStartDate = from.datepicker("getDate");
+                    var dStartDate = from.datepicker("getDate");
 
-	            var dEndDate = to.datepicker("getDate");
+                    var dEndDate = to.datepicker("getDate");
 
-	            if (dStartDate == null && dEndDate == null) {
-	                return true;
-	            }
+                    if (dStartDate == null && dEndDate == null) {
+                        return true;
+                    }
 
-	            var dCellDate = null;
-	            try {
-	                if (aData[_fnColumnIndex(index)] == null || aData[_fnColumnIndex(index)] == "")
-	                    return false;
-	                dCellDate = $.datepicker.parseDate($.datepicker.regional[""].dateFormat, aData[_fnColumnIndex(index)]);
-	            } catch (ex) {
-	                return false;
-	            }
-	            if (dCellDate == null)
-	                return false;
+                    var dCellDate = null;
+                    try {
+                        if (aData[_fnColumnIndex(index)] == null || aData[_fnColumnIndex(index)] == "")
+                            return false;
+                        dCellDate = $.datepicker.parseDate($.datepicker.regional[""].dateFormat, aData[_fnColumnIndex(index)]);
+                    } catch (ex) {
+                        return false;
+                    }
+                    if (dCellDate == null)
+                        return false;
 
 
-	            if (dStartDate == null && dCellDate <= dEndDate) {
-	                return true;
-	            }
-	            else if (dStartDate <= dCellDate && dEndDate == null) {
-	                return true;
-	            }
-	            else if (dStartDate <= dCellDate && dCellDate <= dEndDate) {
-	                return true;
-	            }
-	            return false;
-	        }
-        );
+                    if (dStartDate == null && dCellDate <= dEndDate) {
+                        return true;
+                    }
+                    else if (dStartDate <= dCellDate && dEndDate == null) {
+                        return true;
+                    }
+                    else if (dStartDate <= dCellDate && dCellDate <= dEndDate) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
             //------------end date range filtering function
 
             $('#' + sFromId + ',#' + sToId, th).change(function () {
@@ -334,7 +320,7 @@
                 currentFilter = oSelected;
 
             var selectId = "select" + sLabel.split(" ").join('');
-            var r = '<select id="' + selectId + '" class="search_init select_filter form-control" rel="' + i + '"><option value="" class="search_init"> Filtrar ' + sLabel + '</option>';
+            var r = '<select id="' + selectId + '" class="search_init select_filter form-control" rel="' + i + '"><option value="" class="search_init">' + sLabel + '</option>';
             if (bMultiselect) {
                 r = '<select id="' + selectId + '" class="search_init select_filter form-control" rel="' + i + '" multiple="multiple">';
             }
@@ -345,19 +331,19 @@
                     var selected = '';
                     if (escape(aData[j]) == currentFilter
                         || escape(aData[j]) == escape(currentFilter)
-                        )
+                    )
                         selected = 'selected '
-                    r += '<option ' + selected + ' value="' + escape(aData[j]) + '">' + {{ aData[j] | translate}} + '</option>';
+                    r += '<option ' + selected + ' value="' + escape(aData[j]) + '" translate=' + aData[j] + '>' + aData[j] + '</option>';
                 }
                 else {
                     var selected = '';
                     if (bRegex) {
                         //Do not escape values if they are explicitely set to avoid escaping special characters in the regexp
                         if (aData[j].value == currentFilter) selected = 'selected ';
-                        r += '<option ' + selected + 'value="' + aData[j].value + '">' + {{ aData[j].label | translate}} + '</option>';
+                        r += '<option ' + selected + 'value="' + aData[j].value + '" translate=' + aData[j].label + '>' + aData[j].label + '</option>';
                     } else {
                         if (escape(aData[j].value) == currentFilter) selected = 'selected ';
-                        r += '<option ' + selected + 'value="' + escape(aData[j].value) + '">' + {{ aData[j].label | translate}} + '</option>';
+                        r += '<option ' + selected + 'value="' + escape(aData[j].value) + '" translate=' + aData[j].label + '>' + aData[j].label + '</option>';
                     }
                 }
             }
@@ -388,26 +374,45 @@
                 });
             } else {
                 select.change(function () {
-                    //var val = $(this).val();
-                    if ($(this).val() != "") {
-                        $(this).removeClass("search_init");
-                    } else {
-                        $(this).addClass("search_init");
+                    var val = $(this).val();
+                    $('option', this).attr('selected', false);
+                    if (val != '') {
+                        $('option[value=' + val + ']', this).attr('selected', true);
                     }
                     if (bRegex)
-                        oTable.fnFilter($(this).val(), iColumn, bRegex); //Issue 41
+                        oTable.fnFilter(val, iColumn, bRegex); //Issue 41
                     else
-                        oTable.fnFilter(unescape($(this).val()), iColumn); //Issue 25
+                        oTable.fnFilter(unescape(val), iColumn); //Issue 25
                     fnOnFiltered();
                 });
                 if (currentFilter != null && currentFilter != "")//Issue 81
                     oTable.fnFilter(unescape(currentFilter), iColumn);
             }
-            select.select2();
+            // select.select2({
+            //     'width': "x"
+            // });
         }
 
         function fnCreateSelect(oTable, aData, bRegex, oSelected, bMultiselect) {
             var oSettings = oTable.fnSettings();
+
+            if ((typeof (aData) == 'object' && typeof(aData.$sourceFunction) != 'undefined')) {
+                if (aData.$sourceFunction.constructor.name == 'Promise') {
+                    aData.$sourceFunction.then(
+                        function (data) {
+                            console.log(data);
+                            var r = [];
+                            for (j = 0; j < data.length; j++) {
+                                r[j] = {value: data[j][aData.value], label: data[j][aData.label]};
+                            }
+                            return fnCreateColumnSelect(oTable, r, _fnColumnIndex(i), th, label, bRegex, oSelected, bMultiselect); //Issue 37
+                        }, function (err) {
+                            console.error('Error: ' + err);
+                        }
+                    );
+                }
+            }
+
             if ((aData == null || typeof (aData) == 'function') && oSettings.sAjaxSource != "" && !oSettings.oFeatures.bServerSide) {
                 // Add a function to the draw callback, which will check for the Ajax data having 
                 // been loaded. Use a closure for the individual column elements that are used to 
@@ -425,6 +430,7 @@
                     "sName": "column_filter_" + i
                 });
             }
+
             // Regardless of the Ajax state, build the select on first pass
             fnCreateColumnSelect(oTable, typeof (aData) == 'function' ? null : aData, _fnColumnIndex(i), th, label, bRegex, oSelected, bMultiselect); //Issue 37
 
@@ -474,7 +480,8 @@
             var numCol = Math.floor(iLen / numRow);
             if (iLen % numRow > 0) {
                 numCol = numCol + 1;
-            };
+            }
+            ;
 
             //count how many column should be generated and split the div size
             var divWidth = 100 / numCol - 2;
@@ -493,9 +500,9 @@
             var checkToggleDiv = uniqueId + "-flt-toggle";
             r += '<button id="' + buttonId + '" class="checkbox_filter btn btn-default" > ' + labelBtn + '</button>'; //filter button witch open dialog
             r += '<div id="' + checkToggleDiv + '" '
-            	+ 'title="' + label + '" '
+                + 'title="' + label + '" '
                 + 'rel="' + i + '" '
-            	+ 'class="toggle-check ui-widget-content ui-corner-all"  style="width: ' + (divWidthToggle) + '%; " >'; //dialog div
+                + 'class="toggle-check ui-widget-content ui-corner-all"  style="width: ' + (divWidthToggle) + '%; " >'; //dialog div
             //r+= '<div align="center" style="margin-top: 5px; "> <button id="'+buttonId+'Reset" class="checkbox_filter" > reset </button> </div>'; //reset button and its div
             r += divRowDef;
 
@@ -531,7 +538,7 @@
                         //search = search + ' ' + $(this).val();
                         //concatenation for selected checks in or
                         if ((index == 0 && resSize == 1)
-                				|| (index != 0 && index == resSize - 1)) {
+                            || (index != 0 && index == resSize - 1)) {
                             or = '';
                         }
                         //trim
@@ -548,14 +555,14 @@
                         $('input:checkbox[name="' + localLabel + '"]').addClass("search_init");
                     }
                     /* Old code for setting search_init CSS class on checkboxes if any of them is checked
-                    for (var jj = 0; jj < iLen; jj++) {
-                        if (search != "") {
-                            $('#' + aData[jj]).removeClass("search_init");
-                        } else {
-                            $('#' + aData[jj]).addClass("search_init");
-                        }
-                    }
-                    */
+                     for (var jj = 0; jj < iLen; jj++) {
+                     if (search != "") {
+                     $('#' + aData[jj]).removeClass("search_init");
+                     } else {
+                     $('#' + aData[jj]).addClass("search_init");
+                     }
+                     }
+                     */
 
                     //execute search
                     oTable.fnFilter(search, index, true, false);
@@ -584,10 +591,12 @@
                         return false;
                     }
                 },
-							{
-							    text: "Close",
-							    click: function () { $(this).dialog("close"); }
-							}
+                    {
+                        text: "Close",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
                 ]
             });
 
@@ -618,20 +627,18 @@
             };
             //reset
             /*
-            $('#'+buttonId+"Reset").button();
-            $('#'+buttonId+"Reset").click(function(){
-            $('#'+buttonId).removeClass("filter_selected"); //LM remove border if filter selected
-            $('input:checkbox[name="'+localLabel+'"]:checked').each(function(index3) {
-            $(this).attr('checked', false);
-            $(this).addClass("search_init");
-            });
-            oTable.fnFilter('', index, true, false);
-            return false;
-            }); 
-            */
+             $('#'+buttonId+"Reset").button();
+             $('#'+buttonId+"Reset").click(function(){
+             $('#'+buttonId).removeClass("filter_selected"); //LM remove border if filter selected
+             $('input:checkbox[name="'+localLabel+'"]:checked').each(function(index3) {
+             $(this).attr('checked', false);
+             $(this).addClass("search_init");
+             });
+             oTable.fnFilter('', index, true, false);
+             return false;
+             });
+             */
         }
-
-
 
 
         function _fnRangeLabelPart(iPlace) {
@@ -644,8 +651,6 @@
                     return sRangeFormat.substring(sRangeFormat.indexOf("{to}") + 4);
             }
         }
-
-
 
 
         var oTable = this;
@@ -700,9 +705,9 @@
                     aoFilterCells = oTable.fnSettings().aoHeader[0];
                 }
                 /*else {
-                //tr.prependTo($("thead", oTable));
-                sFilterRow = "tr:first";
-                }*/
+                 //tr.prependTo($("thead", oTable));
+                 sFilterRow = "tr:first";
+                 }*/
 
                 sFilterRow = "tr:first";
 
@@ -801,7 +806,7 @@
                                 aoData[k].value = afnSearch_[j]();
                         }
                     }
-                    aoData.push({ "name": "sRangeSeparator", "value": properties.sRangeSeparator });
+                    aoData.push({"name": "sRangeSeparator", "value": properties.sRangeSeparator});
 
                     if (fnServerDataOriginal != null) {
                         try {
@@ -822,8 +827,6 @@
         });
 
     };
-
-
 
 
 })(jQuery);
