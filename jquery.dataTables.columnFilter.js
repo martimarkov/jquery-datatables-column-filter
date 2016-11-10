@@ -400,7 +400,6 @@
                 if (aData.$sourceFunction.constructor.name == 'Promise') {
                     aData.$sourceFunction.then(
                         function (data) {
-                            console.log(data);
                             var r = [];
                             for (j = 0; j < data.length; j++) {
                                 r[j] = {value: data[j][aData.value], label: data[j][aData.label]};
