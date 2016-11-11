@@ -731,7 +731,7 @@
                     aoColumn = properties.aoColumns[i];
                 }
                 //label = $(this).text(); //Before fix for ColVis
-                label = $($(this)[0].cell).text(); //Fix for ColVis
+                label = $($(this)[0].cell).data('label') || $($(this)[0].cell).text(); //Fix for ColVis
                 if (aoColumn.sSelector == null) {
                     //th = $($(this)[0]);//Before fix for ColVis
                     th = $($(this)[0].cell); //Fix for ColVis
