@@ -320,7 +320,7 @@
                 currentFilter = oSelected;
 
             var selectId = "select" + sLabel.split(" ").join('');
-            var r = '<select id="' + selectId + '" class="search_init select_filter form-control" rel="' + i + '"><option value="" class="search_init">' + sLabel + '</option>';
+            var r = '<select id="' + selectId + '" class="search_init select_filter form-control" rel="' + i + '"><option value="" class="search_init" translate="' + sLabel + '"></option>';
             if (bMultiselect) {
                 r = '<select id="' + selectId + '" class="search_init select_filter form-control" rel="' + i + '" multiple="multiple">';
             }
@@ -333,17 +333,17 @@
                         || escape(aData[j]) == escape(currentFilter)
                     )
                         selected = 'selected '
-                    r += '<option ' + selected + ' value="' + escape(aData[j]) + '" translate=' + aData[j] + '>' + aData[j] + '</option>';
+                    r += '<option ' + selected + ' value="' + escape(aData[j]) + '" translate="' + aData[j] + '"></option>';
                 }
                 else {
                     var selected = '';
                     if (bRegex) {
                         //Do not escape values if they are explicitely set to avoid escaping special characters in the regexp
                         if (aData[j].value == currentFilter) selected = 'selected ';
-                        r += '<option ' + selected + 'value="' + aData[j].value + '" translate=' + aData[j].label + '>' + aData[j].label + '</option>';
+                        r += '<option ' + selected + 'value="' + aData[j].value + '" translate="' + aData[j].label + '"></option>';
                     } else {
                         if (escape(aData[j].value) == currentFilter) selected = 'selected ';
-                        r += '<option ' + selected + 'value="' + escape(aData[j].value) + '" translate=' + aData[j].label + '>' + aData[j].label + '</option>';
+                        r += '<option ' + selected + 'value="' + escape(aData[j].value) + '" translate="' + aData[j].label + '"></option>';
                     }
                 }
             }
