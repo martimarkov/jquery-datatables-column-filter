@@ -114,7 +114,7 @@
             }
 
 
-            var input = $('<input translate translate-attr-placeholder="'+label+'" type="text" class="' + search_init + sCSSClass + '" value="' + inputvalue + '" rel="' + i + '"/>');
+            var input = $('<input placeholder="{{\''+label+'\' | translate}}" type="text" class="' + search_init + sCSSClass + '" value="' + inputvalue + '" rel="' + i + '"/>');
             if (iMaxLenght != undefined && iMaxLenght != -1) {
                 input.attr('maxlength', iMaxLenght);
             }
